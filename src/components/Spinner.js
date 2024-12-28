@@ -4,6 +4,8 @@ import './Spinner.css';
 import { useAnimate, motion, cubicBezier } from "motion/react";
 import { useState, useEffect, useRef } from 'react';
 
+const TARGET_CARD = "spin-3";
+
 function Spinner() {
     const rouletteRewards = rewards;
     const cardWidth = 75;
@@ -66,20 +68,27 @@ function Spinner() {
         return rows;
     };
 
-    const calculateLandingPosition = (cardUnderSelectorId) => {
+    const calculateLandingPosition = (cardUnderSelectorId, targetCardIndex) => {
         const parsedCardId = cardUnderSelectorId.split('-');
         const currentRowIndex = parsedCardId[parsedCardId.length - 2];
         const currentCardIndex = parsedCardId[parsedCardId.length - 1];
-        console.log(currentRowIndex, currentCardIndex);
+        console.log(currentRowIndex, currentCardIndex, targetCardIndex);
         const rowsToSkip = 2;
+        // Skip a number of rows to the currentCardIndex in next row
         const distanceToSkip = rowsToSkip * rouletteRewards.length * cardWidthWithMargins;
-        const landingPosition = distanceToSkip;
+        const targetDistance = Math.abs(currentCardIndex - targetCardIndex) * cardWidthWithMargins
+        const landingPosition = targetCardIndex > currentCardIndex
+            // Move inside the current row
+            ? distanceToSkip + targetDistance
+            // Move to the next row
+            : distanceToSkip + (rouletteRewards.length * cardWidthWithMargins) - targetDistance;
         return landingPosition * -1;
     };
 
     const handleSpin = () => {
         const cardUnderSelector = getCardFromSelector();
-        const newLandingPosition = calculateLandingPosition(cardUnderSelector.id);
+        const targetCardIndex = rouletteRewards.indexOf(TARGET_CARD);
+        const newLandingPosition = calculateLandingPosition(cardUnderSelector.id, targetCardIndex);
         animate(scope.current, {
             x: startPosition + newLandingPosition,
             transition: {
