@@ -2,12 +2,25 @@ import { rewards } from "../data/rewards";
 import { Card } from "./Card";
 import './Spinner.css';
 import { useAnimate, motion, cubicBezier } from "motion/react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function Spinner() {
     const rouletteRewards = rewards;
+    const cardWidth = 75 + 2 * 2;
+
     const [scope, animate] = useAnimate();
     const [startPosition, setStartPosition] = useState(0);
+
+    useEffect(() => {
+        animate(scope.current, {
+            x: cardWidth / 2,
+            transition: {
+                ease: cubicBezier(0.12, 0, 0.39, 0),
+                duration: 3,
+            }
+        });
+        setStartPosition(cardWidth / 2);
+    }, [animate, cardWidth, scope]);
 
     const renderRows = () => {
         const rows = []
@@ -20,8 +33,9 @@ function Spinner() {
     };
 
     const calculateLandingPosition = () => {
-        const cardWidth = 75 + 2 * 2; // card width + padding
-        return cardWidth * -1;
+        const rowsToSkip = 2;
+        const landingPosition = rowsToSkip * rouletteRewards.length * cardWidth;
+        return landingPosition * -1;
     };
 
     const handleSpin = () => {
