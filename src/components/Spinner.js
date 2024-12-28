@@ -37,7 +37,7 @@ function Spinner() {
     };
 
     return (
-        <div>
+        <div className="the-spinner">
             <div>
                 <h1>DUMMY SPINNER</h1>
             </div>

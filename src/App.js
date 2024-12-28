@@ -3,7 +3,9 @@ import { Spinner } from './components/Spinner';
 
 function App() {
   return (
-    <Spinner />
+    <div className="spinner-wrapper">
+      <Spinner />
+    </div>
   );
 }
 
