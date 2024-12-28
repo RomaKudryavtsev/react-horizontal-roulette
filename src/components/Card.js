@@ -5,7 +5,7 @@ function Card({ rewardStr }) {
         <div className="card">
             <span className="card-content">{rewardStr}</span>
         </div>
-    )
+    );
 }
 
 export { Card }
