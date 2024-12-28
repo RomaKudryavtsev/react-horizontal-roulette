@@ -41,6 +41,7 @@ function Spinner() {
     const [startPosition, setStartPosition] = useState(0);
     const [translateX, setTranslateX] = useState(0);
     const [initialCardUnderSelectorId, setInitialCardUnderSelectorId] = useState('');
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const selectorRef = useRef(null);
     const wrapperRef = useRef(null);
 
@@ -105,6 +106,7 @@ function Spinner() {
     };
 
     const handleSpin = () => {
+        setIsButtonDisabled(true);
         const newLandingPosition = calculateLandingPosition({
             rowsToSkip: 12,
             currentCardIndex: parseCardIndexFromId(getCardFromSelector().id),
@@ -115,6 +117,8 @@ function Spinner() {
         animate(scope.current, {
             x: startPosition + newLandingPosition,
             transition
+        }).then(() => {
+            setTimeout(() => setIsButtonDisabled(false), 5000); // Re-enable button after 5 seconds
         });
         setStartPosition(startPosition + newLandingPosition);
     };
@@ -135,7 +139,7 @@ function Spinner() {
                 </motion.div>
             </div>
             <div className="button-wrapper">
-                <button onClick={handleSpin}>
+                <button onClick={handleSpin} disabled={isButtonDisabled}>
                     <span>SPIN</span>
                 </button>
             </div>
