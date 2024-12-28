@@ -23,7 +23,6 @@ function Spinner() {
             const selectorCenter = selectorLeft + selectorWidth / 2;
             // Convert HTMLCollection to an array for easy iteration
             const cards = Array.from(document.getElementsByClassName('card'));
-            // Find the card that the selector is pointing to
             const cardUnderSelector = cards.find(card => {
                 const cardPosition = card.getBoundingClientRect();
                 const cardLeft = parseFloat(cardPosition.left);
@@ -47,11 +46,13 @@ function Spinner() {
         setStartPosition(cardWidthWithMargins / 2);
     }, [animate, cardWidthWithMargins, scope]);
 
+    // Prepare cards for spinner
     const renderRows = () => {
         const rows = [];
         for (let rowIdx = 0; rowIdx < 29; rowIdx++) {
             const rowContent = rouletteRewards.map((r, cardIdx) => {
-                const cardId = `card-${rowIdx}-${cardIdx}`;  // Unique ID for each card
+                // Unique ID for each card (for parsing)
+                const cardId = `$card-${r}-${rowIdx}-${cardIdx}`;
                 return (
                     <Card
                         key={cardId}
@@ -64,9 +65,12 @@ function Spinner() {
         }
         return rows;
     };
-    
 
-    const calculateLandingPosition = () => {
+    const calculateLandingPosition = (cardUnderSelectorId) => {
+        const parsedCardId = cardUnderSelectorId.split('-');
+        const currentRowIndex = parsedCardId[parsedCardId.length - 2];
+        const currentCardIndex = parsedCardId[parsedCardId.length - 1];
+        console.log(currentRowIndex, currentCardIndex);
         const rowsToSkip = 2;
         const distanceToSkip = rowsToSkip * rouletteRewards.length * cardWidthWithMargins;
         const landingPosition = distanceToSkip;
@@ -74,11 +78,8 @@ function Spinner() {
     };
 
     const handleSpin = () => {
-        const newLandingPosition = calculateLandingPosition();
         const cardUnderSelector = getCardFromSelector();
-        console.log(cardUnderSelector)
-        console.log(cardUnderSelector.querySelector('.card-content').innerText);
-        console.log(cardUnderSelector.id);
+        const newLandingPosition = calculateLandingPosition(cardUnderSelector.id);
         animate(scope.current, {
             x: startPosition + newLandingPosition,
             transition: {
