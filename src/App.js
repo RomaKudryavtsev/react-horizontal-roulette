@@ -1,10 +1,9 @@
 import './App.css';
+import { Spinner } from './components/Spinner';
 
 function App() {
   return (
-    <div className="App">
-      <h1>hello world</h1>
-    </div>
+    <Spinner />
   );
 }
 
