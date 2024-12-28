@@ -14,7 +14,9 @@ function Spinner() {
 
     const [scope, animate] = useAnimate();
     const [startPosition, setStartPosition] = useState(0);
+    const [translateX, setTranslateX] = useState(0);
     const selectorRef = useRef(null);
+    const wrapperRef = useRef(null);
 
     // Find the card selector is pointing to
     const getCardFromSelector = () => {
@@ -36,7 +38,7 @@ function Spinner() {
         return null;
     };
 
-    // Normalize distance
+    // Normalize distance upon first render
     useEffect(() => {
         animate(scope.current, {
             x: cardWidthWithMargins / 2,
@@ -47,6 +49,21 @@ function Spinner() {
         });
         setStartPosition(cardWidthWithMargins / 2);
     }, [animate, cardWidthWithMargins, scope]);
+
+    // Reset when spinner right edge is reached
+    useEffect(() => {
+        const wrapperRightEdge = wrapperRef.current.getBoundingClientRect().right;
+        if (Math.abs(translateX) > wrapperRightEdge - 1000) {
+            animate(scope.current, {
+                x: cardWidthWithMargins / 2,
+                transition: {
+                    ease: cubicBezier(0.12, 0, 0.39, 0),
+                    duration: 3,
+                }
+            });
+            setStartPosition(cardWidthWithMargins / 2);
+        }
+    }, [animate, cardWidthWithMargins, scope, translateX]);
 
     // Prepare cards for spinner
     const renderRows = () => {
@@ -71,7 +88,7 @@ function Spinner() {
     const calculateLandingPosition = (cardUnderSelectorId, targetCardIndex) => {
         const parsedCardId = cardUnderSelectorId.split('-');
         const currentCardIndex = parsedCardId[parsedCardId.length - 1];
-        const rowsToSkip = 2;
+        const rowsToSkip = 12;
         // Skip a number of rows to the currentCardIndex in next row
         const distanceToSkip = rowsToSkip * rouletteRewards.length * cardWidthWithMargins;
         const targetDistance = Math.abs(currentCardIndex - targetCardIndex) * cardWidthWithMargins
@@ -87,11 +104,13 @@ function Spinner() {
         const cardUnderSelector = getCardFromSelector();
         const targetCardIndex = rouletteRewards.indexOf(TARGET_CARD);
         const newLandingPosition = calculateLandingPosition(cardUnderSelector.id, targetCardIndex);
+        console.log(`LANDING POS: ${newLandingPosition}`);
+        console.log(`SPINNER WIDTH: ${wrapperRef.current.getBoundingClientRect().right}`)
         animate(scope.current, {
             x: startPosition + newLandingPosition,
             transition: {
                 ease: cubicBezier(0.12, 0, 0.39, 0),
-                duration: 3,
+                duration: 6,
             }
         });
         setStartPosition(startPosition + newLandingPosition);
@@ -102,11 +121,12 @@ function Spinner() {
             <div>
                 <h1>DUMMY SPINNER</h1>
             </div>
-            <div className="roulette-wrapper">
+            <div ref={wrapperRef} className="roulette-wrapper">
                 <div ref={selectorRef} className="selector"></div>
                 <motion.div
                     className="wheel"
                     ref={scope}
+                    onUpdate={latest => setTranslateX(latest.x)}
                 >
                     {renderRows()}
                 </motion.div>
