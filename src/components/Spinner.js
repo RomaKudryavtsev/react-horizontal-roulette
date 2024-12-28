@@ -70,9 +70,7 @@ function Spinner() {
 
     const calculateLandingPosition = (cardUnderSelectorId, targetCardIndex) => {
         const parsedCardId = cardUnderSelectorId.split('-');
-        const currentRowIndex = parsedCardId[parsedCardId.length - 2];
         const currentCardIndex = parsedCardId[parsedCardId.length - 1];
-        console.log(currentRowIndex, currentCardIndex, targetCardIndex);
         const rowsToSkip = 2;
         // Skip a number of rows to the currentCardIndex in next row
         const distanceToSkip = rowsToSkip * rouletteRewards.length * cardWidthWithMargins;
