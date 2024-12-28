@@ -1,14 +1,17 @@
-import { rewards } from "../data/rewards"
+import { rewards } from "../data/rewards";
 import { Card } from "./Card";
 import './Spinner.css';
-import { useAnimate, motion, cubicBezier } from "motion/react"
+import { useAnimate, motion, cubicBezier } from "motion/react";
+import { useState } from 'react';
 
 function Spinner() {
+    const rouletteRewards = rewards;
     const [scope, animate] = useAnimate();
+    const [startPosition, setStartPosition] = useState(0);
 
     const renderRows = () => {
         const rows = []
-        const rowContent = rewards.map((r, idx) => <Card key={idx} rewardStr={r} />);
+        const rowContent = rouletteRewards.map((r, idx) => <Card key={idx} rewardStr={r} />);
         const row = <div className="row">{rowContent}</div>;
         for (let i = 0; i < 29; i++) {
             rows.push(row);
@@ -17,18 +20,20 @@ function Spinner() {
     };
 
     const calculateLandingPosition = () => {
-        const cardWidth = 75 + 2 * 2;
+        const cardWidth = 75 + 2 * 2; // card width + padding
         return cardWidth * -1;
     };
 
     const handleSpin = () => {
-        const landingPosition = calculateLandingPosition();
+        const newLandingPosition = calculateLandingPosition();
         animate(scope.current, {
-            x: landingPosition, transition: {
+            x: startPosition + newLandingPosition,
+            transition: {
                 ease: cubicBezier(0.12, 0, 0.39, 0),
                 duration: 3,
             }
-        })
+        });
+        setStartPosition(startPosition + newLandingPosition);
     };
 
     return (
@@ -46,9 +51,7 @@ function Spinner() {
                 </motion.div>
             </div>
             <div className="button-wrapper">
-                <button
-                    onClick={handleSpin}
-                >
+                <button onClick={handleSpin}>
                     <span>SPIN</span>
                 </button>
             </div>
@@ -56,4 +59,4 @@ function Spinner() {
     );
 }
 
-export { Spinner }
+export { Spinner };
