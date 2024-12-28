@@ -1,8 +1,8 @@
 import './Card.css'
 
-function Card({ rewardStr }) {
+function Card({ rewardStr, id }) {
     return (
-        <div className="card">
+        <div className="card" id={id}>
             <span className="card-content">{rewardStr}</span>
         </div>
     );

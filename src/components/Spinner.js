@@ -48,14 +48,23 @@ function Spinner() {
     }, [animate, cardWidthWithMargins, scope]);
 
     const renderRows = () => {
-        const rows = []
-        const rowContent = rouletteRewards.map((r, idx) => <Card key={idx} className="$card" rewardStr={r} />);
-        const row = <div className="row">{rowContent}</div>;
-        for (let i = 0; i < 29; i++) {
-            rows.push(row);
+        const rows = [];
+        for (let rowIdx = 0; rowIdx < 29; rowIdx++) {
+            const rowContent = rouletteRewards.map((r, cardIdx) => {
+                const cardId = `card-${rowIdx}-${cardIdx}`;  // Unique ID for each card
+                return (
+                    <Card
+                        key={cardId}
+                        id={cardId}
+                        rewardStr={r}
+                    />
+                );
+            });
+            rows.push(<div key={rowIdx} className="row">{rowContent}</div>);
         }
         return rows;
     };
+    
 
     const calculateLandingPosition = () => {
         const rowsToSkip = 2;
@@ -66,7 +75,10 @@ function Spinner() {
 
     const handleSpin = () => {
         const newLandingPosition = calculateLandingPosition();
-        console.log(getCardFromSelector().querySelector('.card-content').innerText);
+        const cardUnderSelector = getCardFromSelector();
+        console.log(cardUnderSelector)
+        console.log(cardUnderSelector.querySelector('.card-content').innerText);
+        console.log(cardUnderSelector.id);
         animate(scope.current, {
             x: startPosition + newLandingPosition,
             transition: {
